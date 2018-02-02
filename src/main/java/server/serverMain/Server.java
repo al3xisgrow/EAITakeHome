@@ -9,9 +9,6 @@ import main.java.server.handler.CrudHandler;
 import main.java.server.handler.DefaultHandler;
 
 
-/**
- * Created by Alexis on 2/1/18.
- */
 
 public class Server {
     private static final int MAX_WAITING_CONNECTIONS = 12;

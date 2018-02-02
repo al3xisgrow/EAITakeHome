@@ -23,12 +23,13 @@ public class Serializer {
 
     /**
      * Converts a String of JSON into an Object of the specified class
-     * @param jsonObj String containing the JSON data
+     * @param jsonObj InputStream containing the JSON data
      * @param c  class of the Object to retrieve from the String
      * @return Object, with the data from the String of JSON
      */
-    public static Object fromJson(String jsonObj, Class c) {
-        return gson.fromJson(jsonObj, c);
+    public static Object fromJson(InputStream jsonObj, Class c) throws IOException {
+        String json = readStream(jsonObj);
+        return gson.fromJson(json, c);
     }
 
 

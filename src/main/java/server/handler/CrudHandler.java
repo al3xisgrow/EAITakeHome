@@ -5,6 +5,12 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+import main.java.server.dataAccess.DatabaseException;
+import main.java.server.services.Create;
+import main.java.server.services.Delete;
+import main.java.server.services.Update;
+import main.java.shared.request.UpsertRequest;
+import main.java.shared.util.Serializer;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,10 +21,6 @@ import java.net.URI;
 
 
 
-/**
- * Created by Alexis on 2/1/18.
- */
-
 public class CrudHandler implements HttpHandler {
     @Override
     public void handle(HttpExchange httpExchange) throws IOException {
@@ -28,57 +30,50 @@ public class CrudHandler implements HttpHandler {
 
         String[] urlComponents = url.split("/");
 
-
-        if (httpExchange.getRequestMethod().toLowerCase().equals("get")) {
-            JsonObject j = createResponse("Get!");
-            sendResponse(j, httpExchange);
-            //Serializer.fromJson(readStream(httpExchange.getRequestBody()), CreateRequest.class);
-        } else if (httpExchange.getRequestMethod().toLowerCase().equals("post")){
-            JsonObject j = createResponse("Post!");
-            sendResponse(j, httpExchange);
-        } else if (httpExchange.getRequestMethod().toLowerCase().equals("put")){
-            JsonObject j = createResponse("Put!");
-            sendResponse(j, httpExchange);
-        } else if (httpExchange.getRequestMethod().toLowerCase().equals("delete")){
-            JsonObject j = createResponse("Delete!");
-            sendResponse(j, httpExchange);
+        String contactName = "";
+        if(urlComponents.length >= 3) {
+            contactName = urlComponents[2];
         }
-    }
 
-    private String readStream(InputStream is) throws IOException {
-        StringBuilder sb = new StringBuilder();
-        InputStreamReader sr = new InputStreamReader(is);
-        char[] buf = new char[1024];
-        int len;
-        while ((len = sr.read(buf)) > 0) {
-            sb.append(buf, 0, len);
-        }
-        return sb.toString();
-    }
+        Responder r = new Responder();
 
-    private JsonObject createResponse(String message) {
-        JsonObject json = new JsonObject();
-        json.addProperty("message", message);
-        return json;
-    }
+        try {
+            if (httpExchange.getRequestMethod().toLowerCase().equals("get")) {
+                // Send response
+                r.sendResponse("Get!", httpExchange);
 
-    private void sendResponse(Object r, HttpExchange exchange) {
-        if (r == null) {
-            // fail!
-            System.out.println("Send Response Failed!");
-        } else {
-            try {
-                exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
-                OutputStreamWriter response = new OutputStreamWriter(exchange.getResponseBody());
-                Gson gson = new GsonBuilder().disableHtmlEscaping().create();
-                response.write(gson.toJson(r));
-                response.close();
+            } else if (httpExchange.getRequestMethod().toLowerCase().equals("post")) {
+                // Unpackage request
+                UpsertRequest request = (UpsertRequest) Serializer.fromJson(httpExchange.getRequestBody(), UpsertRequest.class);
 
-            } catch (IOException e) {
-                System.out.println("Couldn't send response!");
-                e.printStackTrace();
+                // Create entry
+                Create creator = new Create();
+                String response = creator.createContact(contactName, request.getContact());
+
+                // Send Response
+                r.sendResponse(response, httpExchange);
+
+            } else if (httpExchange.getRequestMethod().toLowerCase().equals("put")) {
+                // Unpackage Request
+                UpsertRequest request = (UpsertRequest) Serializer.fromJson(httpExchange.getRequestBody(), UpsertRequest.class);
+
+                // Update database
+                Update updater = new Update();
+                String response = updater.updateContact(contactName, request.getContact());
+
+                // Send response
+                r.sendResponse(response, httpExchange);
+            } else if (httpExchange.getRequestMethod().toLowerCase().equals("delete")) {
+                // Delete entry
+                Delete deleter = new Delete();
+                String response = deleter.deleteContact(contactName);
+
+                // Send response
+                r.sendResponse(response, httpExchange);
             }
+        } catch (DatabaseException e){
+            // Send response
+            r.sendResponse(e.getMessage(),httpExchange);
         }
     }
-    
 }

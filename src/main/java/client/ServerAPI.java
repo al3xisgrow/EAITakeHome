@@ -1,8 +1,7 @@
 package main.java.client;
 
 import main.java.shared.model.Contact;
-import main.java.shared.request.CreateRequest;
-import main.java.shared.request.UpdateRequest;
+import main.java.shared.request.UpsertRequest;
 
 public class ServerAPI {
     private static ClientCommunicator facade;
@@ -14,7 +13,7 @@ public class ServerAPI {
 
     public static void createContact(String url) {
         try {
-            String response = facade.post("POST", url, new CreateRequest());
+            String response = facade.post("POST", url, new UpsertRequest());
             System.out.println(response);
         } catch (ClientException e) {
             System.out.println(e.getMessage());
@@ -33,7 +32,7 @@ public class ServerAPI {
 
     public static void updateContact(String url){
         try {
-            String response = facade.post("PUT", url, new UpdateRequest());
+            String response = facade.post("PUT", url, new UpsertRequest());
             System.out.println(response);
         } catch (ClientException e) {
             System.out.println(e.getMessage());

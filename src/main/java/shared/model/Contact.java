@@ -1,12 +1,59 @@
 package main.java.shared.model;
 
-/**
- * Created by Alexis on 2/1/18.
- */
+
 
 public class Contact {
     private String name;
     private int phoneNumber;
     private String address;
     private String note;
+
+    public Contact(){
+        this.name = "";
+        this.phoneNumber = 0;
+        this.address = "";
+        this.note = "";
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(int phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
+    }
+
+    @Override
+    public String toString(){
+        StringBuilder output = new StringBuilder();
+        output.append("\tName: " + getName() +
+                "\n\tPhone Number: " + getPhoneNumber() +
+                "\n\tAddress: " + getAddress() +
+                "\n\tNotes: " + getNote() + "\n");
+        return output.toString();
+    }
 }
