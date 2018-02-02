@@ -69,7 +69,8 @@ public class ClientCommunicator {
                 InputStream output = connection.getInputStream();
 
                 // Read response
-                String serverResponse = Serializer.readStream(output);
+                Serializer serializer = new Serializer();
+                String serverResponse = serializer.readStream(output);
 
                 output.close();
 
@@ -109,7 +110,8 @@ public class ClientCommunicator {
                 InputStream output = connection.getInputStream();
 
                 // Read response
-                String serverResponse = Serializer.readStream(output);
+                Serializer serializer = new Serializer();
+                String serverResponse = serializer.readStream(output);
 
                 output.close();
 
