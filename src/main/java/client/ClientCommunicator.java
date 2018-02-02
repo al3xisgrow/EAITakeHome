@@ -37,7 +37,7 @@ public class ClientCommunicator {
     }
 
 
-    public String post(String urlPath, Object request) throws ClientException {
+    public String post(String requestMethod, String urlPath, Object request) throws ClientException {
         try {
             URL fullURL = new URL(this.url + urlPath);
             HttpURLConnection connection = (HttpURLConnection) fullURL.openConnection();
@@ -46,8 +46,8 @@ public class ClientCommunicator {
             connection.setDoInput(true);
             connection.setDoOutput(true);
 
-            // Set to POST, since this is the post method...
-            connection.setRequestMethod("POST");
+            // Set the request method
+            connection.setRequestMethod(requestMethod);
 
             // Specify JSON
             connection.addRequestProperty("Accept", "application/json");
@@ -67,7 +67,7 @@ public class ClientCommunicator {
             // Get response
             if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
                 InputStream output = connection.getInputStream();
-                System.out.println("Getting response...");
+
                 // Read response
                 String serverResponse = Serializer.readStream(output);
 
@@ -77,8 +77,7 @@ public class ClientCommunicator {
                 // (is String OK? then convert that to Object from JSON?)
                 return serverResponse;
             } else {
-                // failed.
-                return "Did not work!";
+                throw new ClientException("HTTP code not OK!");
             }
 
         } catch (MalformedURLException e) {
@@ -119,9 +118,8 @@ public class ClientCommunicator {
                 return serverResponse;
             }
             else{
-                return "HTTP code not OK!";
+                throw new ClientException("HTTP code not OK!");
             }
-
         } catch (MalformedURLException e) {
             throw new ClientException(e.getMessage());
         } catch (IOException e) {

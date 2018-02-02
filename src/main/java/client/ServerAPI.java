@@ -2,6 +2,7 @@ package main.java.client;
 
 import main.java.shared.model.Contact;
 import main.java.shared.request.CreateRequest;
+import main.java.shared.request.UpdateRequest;
 
 public class ServerAPI {
     private static ClientCommunicator facade;
@@ -13,11 +14,10 @@ public class ServerAPI {
 
     public static void createContact(String url) {
         try {
-            String response = facade.post(url,new CreateRequest());
+            String response = facade.post("POST", url, new CreateRequest());
             System.out.println(response);
         } catch (ClientException e) {
-            e.printStackTrace();
-            System.out.println("Failure!");
+            System.out.println(e.getMessage());
         }
     }
 
@@ -26,18 +26,27 @@ public class ServerAPI {
             String response = facade.get(url);
             System.out.println(response);
         } catch (ClientException e) {
-            e.printStackTrace();
-            System.out.println("Failure!");
+            System.out.println(e.getMessage());
         }
         return new Contact[1];
     }
 
     public static void updateContact(String url){
-
+        try {
+            String response = facade.post("PUT", url, new UpdateRequest());
+            System.out.println(response);
+        } catch (ClientException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     public static void deleteContact(String url){
-
+        try {
+            String response = facade.post("DELETE", url, null);
+            System.out.println(response);
+        } catch (ClientException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     public static void main(String[] args) {
@@ -51,6 +60,8 @@ public class ServerAPI {
 
             createContact("/contact");
             getContacts("/contact/testName");
+            updateContact("/contact/testName");
+            deleteContact("/contact/testName");
         }
     }
 }
