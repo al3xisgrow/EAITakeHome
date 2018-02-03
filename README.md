@@ -36,7 +36,7 @@ What I would do if I had more time:
    * Finish the User Interface (/client/Main) 
    * Deliverables:
       * Test storage/retrieval of data in Elasticsearch - this is what's causing problems in the system.
-      * Implement the fancy GET /contact?.... endpoint
+      * Implement the GET /contact?.... endpoint
       * Make it easier for someone to test my API by fixing my client/Main class.
    
 
