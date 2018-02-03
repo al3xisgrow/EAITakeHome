@@ -24,12 +24,6 @@ public class ClientCommunicator {
 
     private static ClientCommunicator _instance;
 
-    private ClientCommunicator() {
-        host = "192.168.1.253";
-        port = 8080;
-        url = "http://" + host + ":" + port;
-    }
-
     private ClientCommunicator(String host, String port) {
         this.host = host;
         this.port = Integer.parseInt(port);
