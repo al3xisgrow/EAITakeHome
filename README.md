@@ -36,7 +36,7 @@ What I would do if I had more time:
    * Finish the User Interface (/client/Main) 
    * Deliverables:
       * Test storage/retrieval of data in Elasticsearch - If there were time to do this, 3 (almost 4)/5 API calls would be finished.
-      * Make it easier for someone to test my API
+      * Make it easier for someone to test my API by fixing my client/Main class.
    
 
    
