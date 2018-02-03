@@ -1,7 +1,7 @@
-package main.java.client;
+package client;
 
 import com.google.gson.Gson;
-import main.java.shared.util.Serializer;
+import shared.util.Serializer;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -78,13 +78,13 @@ public class ClientCommunicator {
                 // (is String OK? then convert that to Object from JSON?)
                 return serverResponse;
             } else {
-                throw new ClientException("HTTP code not OK!");
+                throw new ClientException(ClientException.SERVER_ERROR + "HTTP code not OK!");
             }
 
         } catch (MalformedURLException e) {
-            throw new ClientException(e.getMessage());
+            throw new ClientException(ClientException.SERVER_ERROR + e.getMessage());
         } catch (IOException e) {
-            throw new ClientException(e.getMessage());
+            throw new ClientException(ClientException.SERVER_ERROR + e.getMessage());
         }
     }
 
@@ -118,14 +118,13 @@ public class ClientCommunicator {
                 // Convert output from server into useful info
                 // (is String OK? then convert that to Object from JSON?)
                 return serverResponse;
-            }
-            else{
-                throw new ClientException("HTTP code not OK!");
+            } else {
+                throw new ClientException(ClientException.SERVER_ERROR + "HTTP code not OK!");
             }
         } catch (MalformedURLException e) {
-            throw new ClientException(e.getMessage());
+            throw new ClientException(ClientException.SERVER_ERROR + e.getMessage());
         } catch (IOException e) {
-            throw new ClientException(e.getMessage());
+            throw new ClientException(ClientException.SERVER_ERROR + e.getMessage());
         }
     }
 

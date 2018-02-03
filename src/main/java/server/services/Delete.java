@@ -1,28 +1,29 @@
-package main.java.server.services;
+package server.services;
 
-import main.java.server.dataAccess.ContactDao;
-import main.java.server.dataAccess.Database;
-import main.java.server.dataAccess.DatabaseException;
-import main.java.server.dataAccess.IContactDao;
+import server.dataAccess.DatabaseException;
+import server.dataAccess.ElasticsearchFactory;
+import server.dataAccess.IDatabaseAPI;
+import server.dataAccess.IDatabaseFactory;
+
 
 public class Delete {
-    private IContactDao contactDao;
+    private static IDatabaseAPI databaseAPI;
+    private static IDatabaseFactory databaseFactory;
 
     public Delete(){
-        contactDao = new ContactDao();
+        databaseFactory = new ElasticsearchFactory();
     }
 
     public String deleteContact(String name) throws DatabaseException {
-        Database db = new Database();
+        databaseAPI = databaseFactory.getDatabase();
         try {
-            db.openTransaction();
 
-            contactDao.deleteContact(name);
+            databaseAPI.deleteContact(name);
 
-            db.closeTransaction(true);
-        } catch (DatabaseException e){
-            db.closeTransaction(false);
+        } catch (DatabaseException e) {
             throw new DatabaseException(e.getMessage());
+        } finally {
+            databaseAPI.close();
         }
         return "Contact " + name + " removed.\n";
     }

@@ -1,31 +1,45 @@
-package main.java.server.services;
+package server.services;
 
-import main.java.server.dataAccess.ContactDao;
-import main.java.server.dataAccess.Database;
-import main.java.server.dataAccess.DatabaseException;
-import main.java.server.dataAccess.IContactDao;
-import main.java.shared.model.Contact;
+import org.elasticsearch.ElasticsearchException;
+import server.dataAccess.DatabaseException;
+import server.dataAccess.ElasticsearchFactory;
+import server.dataAccess.IDatabaseAPI;
+import server.dataAccess.IDatabaseFactory;
+import shared.model.Contact;
 
 public class Create {
-    private IContactDao contactDao;
+    private static IDatabaseAPI databaseAPI;
+    private static IDatabaseFactory databaseFactory;
 
     public Create(){
-        contactDao = new ContactDao();
+        databaseFactory = new ElasticsearchFactory();
     }
 
-    public String createContact(String name, Contact contact) throws DatabaseException {
-        Database db = new Database();
+    public String createContact(Contact contact) throws DatabaseException {
+        databaseAPI = databaseFactory.getDatabase();
+
         try {
-            db.openTransaction();
+            // Check for duplicate; names must be unique
+            Contact empty = databaseAPI.getContact(contact.getName());
+            throw new DatabaseException(DatabaseException.DUPLICATE);
 
-            contact.setName(name);
-            contactDao.createContact(contact);
+        } catch (DatabaseException e) {
+            try {
+                if (e.getMessage().equals(DatabaseException.NOT_FOUND)) {
 
-            db.closeTransaction(true);
-        } catch (DatabaseException e){
-            db.closeTransaction(false);
-            throw new DatabaseException(e.getMessage());
+                    databaseAPI.createContact(contact);
+                    return "New contact created.\nContact info:\n" + contact.toString();
+
+                } else {
+                    throw e;
+                }
+            } catch (ElasticsearchException exception){
+                System.out.println(exception.getMessage());
+                throw new DatabaseException(exception.getMessage());
+            }
+
+        } finally {
+            databaseAPI.close();
         }
-        return "New contact created.\nContact info:\n" + contact.toString();
     }
 }

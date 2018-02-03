@@ -1,7 +1,7 @@
-package main.java.shared.request;
+package shared.request;
 
 
-import main.java.shared.model.Contact;
+import shared.model.Contact;
 
 
 public class UpsertRequest {
@@ -9,6 +9,9 @@ public class UpsertRequest {
 
     public UpsertRequest(){
         this.contact = new Contact();
+    }
+    public UpsertRequest(Contact contact){
+        this.contact = contact;
     }
 
     public Contact getContact() {

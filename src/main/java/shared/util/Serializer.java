@@ -1,4 +1,4 @@
-package main.java.shared.util;
+package shared.util;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -17,6 +17,16 @@ public class Serializer implements ISerializer {
 
     public Serializer() {}
 
+
+    /**
+     * Converts given Object to a JSON String
+     * @param o Object to convert
+     * @return JSON String representation of the Object
+     */
+    public String toJson(Object o) {
+        return gson.toJson(o);
+    }
+
     /**
      * Converts a String of JSON into an Object of the specified class
      * @param jsonObj InputStream containing the JSON data
@@ -26,6 +36,10 @@ public class Serializer implements ISerializer {
     public Object toObject(InputStream jsonObj, Class c) throws IOException {
         String json = readStream(jsonObj);
         return gson.fromJson(json, c);
+    }
+
+    public Object toObject(String jsonObj, Class c) throws IOException {
+        return gson.fromJson(jsonObj, c);
     }
 
 

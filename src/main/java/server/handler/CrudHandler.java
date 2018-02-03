@@ -1,14 +1,19 @@
-package main.java.server.handler;
+package server.handler;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
-import main.java.server.dataAccess.DatabaseException;
-import main.java.server.services.Create;
-import main.java.server.services.Delete;
-import main.java.server.services.Update;
-import main.java.shared.request.UpsertRequest;
-import main.java.shared.util.ISerializer;
-import main.java.shared.util.Serializer;
+
+import server.dataAccess.DatabaseException;
+import server.services.Create;
+import server.services.Delete;
+import server.services.Read;
+import server.services.Update;
+import shared.model.Contact;
+import shared.request.UpsertRequest;
+import shared.response.ReadResponse;
+import shared.response.StandardResponse;
+import shared.util.ISerializer;
+import shared.util.Serializer;
 
 import java.io.IOException;
 import java.net.URI;
@@ -32,11 +37,25 @@ public class CrudHandler implements HttpHandler {
         }
 
 
-
         try {
             if (httpExchange.getRequestMethod().toLowerCase().equals("get")) {
-                // Send response
-                serializer.sendResponse("Get!", httpExchange);
+                // Standard get (one contact, by name)
+                if(!contactName.equals("")){
+                    Read reader = new Read();
+                    Contact contact = reader.readContact(contactName);
+
+                    ReadResponse response = new ReadResponse();
+                    response.addContact(contact);
+                    response.setMessage("Success!");
+
+                    serializer.sendResponse(serializer.toJson(response),httpExchange);
+                } else {
+                    // Fancy get. I didn't have time to do this one.
+                    ReadResponse response = new ReadResponse();
+                    response.setMessage("Didn't have time to implement this one :(");
+                    serializer.sendResponse(serializer.toJson(response), httpExchange);
+                }
+
 
             } else if (httpExchange.getRequestMethod().toLowerCase().equals("post")) {
                 // Unpackage request
@@ -44,10 +63,10 @@ public class CrudHandler implements HttpHandler {
 
                 // Create entry
                 Create creator = new Create();
-                String response = creator.createContact(contactName, request.getContact());
+                StandardResponse response = new StandardResponse(creator.createContact(request.getContact()));
 
                 // Send Response
-                serializer.sendResponse(response, httpExchange);
+                serializer.sendResponse(serializer.toJson(response), httpExchange);
 
             } else if (httpExchange.getRequestMethod().toLowerCase().equals("put")) {
                 // Unpackage Request
@@ -55,21 +74,21 @@ public class CrudHandler implements HttpHandler {
 
                 // Update database
                 Update updater = new Update();
-                String response = updater.updateContact(contactName, request.getContact());
+                StandardResponse response = new StandardResponse(updater.updateContact(contactName, request.getContact()));
 
                 // Send response
-                serializer.sendResponse(response, httpExchange);
+                serializer.sendResponse(serializer.toJson(response), httpExchange);
             } else if (httpExchange.getRequestMethod().toLowerCase().equals("delete")) {
                 // Delete entry
                 Delete deleter = new Delete();
-                String response = deleter.deleteContact(contactName);
+                StandardResponse response = new StandardResponse(deleter.deleteContact(contactName));
 
                 // Send response
-                serializer.sendResponse(response, httpExchange);
+                serializer.sendResponse(serializer.toJson(response), httpExchange);
             }
         } catch (DatabaseException e){
             // Send response
-            serializer.sendResponse(e.getMessage(),httpExchange);
+            serializer.sendResponse(e.getMessage(), httpExchange);
         }
     }
 }

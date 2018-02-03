@@ -1,30 +1,31 @@
-package main.java.server.services;
+package server.services;
 
-import main.java.server.dataAccess.ContactDao;
-import main.java.server.dataAccess.Database;
-import main.java.server.dataAccess.DatabaseException;
-import main.java.server.dataAccess.IContactDao;
-import main.java.shared.model.Contact;
+import server.dataAccess.DatabaseException;
+import server.dataAccess.ElasticsearchFactory;
+import server.dataAccess.IDatabaseAPI;
+import server.dataAccess.IDatabaseFactory;
+import shared.model.Contact;
+import shared.model.DataValidationException;
 
 public class Update {
-    private IContactDao contactDao;
+    private static IDatabaseAPI databaseAPI;
+    private static IDatabaseFactory databaseFactory;
 
     public Update(){
-        contactDao = new ContactDao();
+        databaseFactory = new ElasticsearchFactory();
     }
 
     public String updateContact(String name, Contact contact) throws DatabaseException {
-        Database db = new Database();
+        databaseAPI = databaseFactory.getDatabase();
         try {
-            db.openTransaction();
 
             contact.setName(name);
-            contactDao.updateContact(contact);
+            databaseAPI.updateContact(contact);
 
-            db.closeTransaction(true);
-        } catch (DatabaseException e){
-            db.closeTransaction(false);
+        } catch (DataValidationException e) {
             throw new DatabaseException(e.getMessage());
+        } finally {
+            databaseAPI.close();
         }
         return "Contact updated.\nCurrent contact info:\n" + contact.toString();
     }

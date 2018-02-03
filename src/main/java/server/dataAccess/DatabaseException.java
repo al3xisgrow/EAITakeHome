@@ -1,10 +1,11 @@
-package main.java.server.dataAccess;
+package server.dataAccess;
 
-/**
- * Created by Alexis on 2/1/18.
- */
+
 
 public class DatabaseException extends Exception {
+    public static String NOT_FOUND = "Hmmm, that name isn't in your address book. Maybe you should add it.";
+    public static String DUPLICATE = "Hey! You've already got that name in your address book. Try a new one.";
+
 
     public DatabaseException(String s) {
         super(s);

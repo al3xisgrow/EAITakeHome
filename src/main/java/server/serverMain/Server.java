@@ -1,12 +1,15 @@
-package main.java.server.serverMain;
+package server.serverMain;
 
 import com.sun.net.httpserver.HttpServer;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
 
-import main.java.server.handler.CrudHandler;
-import main.java.server.handler.DefaultHandler;
+import server.dataAccess.DatabaseException;
+import server.dataAccess.ElasticsearchFactory;
+import server.dataAccess.IDatabaseFactory;
+import server.handler.CrudHandler;
+import server.handler.DefaultHandler;
 
 
 
@@ -39,11 +42,25 @@ public class Server {
     }
 
     public static void main(String[] args) {
-        if(args.length == 0){
-            System.out.println("ERROR: Please enter port number as first argument.");
+        if(args.length < 4){
+            System.out.println("ERROR: Too few arguments. Enter [server port number] (usually 8080) " +
+                    "[Elasticsearch host IP] (127.0.0.1 for me) [Elasticsearch port1] (between 9300-9400) " +
+                    "[Elasticsearch port2] (between 9300-9400).\n" +
+                    "Example: \"8080 127.0.0.1 9300 9301\""
+            );
         }
         else {
             String portNumber = args[0];
+            try {
+                String elasticsearchHost = args[1];
+                String elasticsearchPort1 = args[2];
+                String elasticsearchPort2 = args[3];
+                IDatabaseFactory factory = new ElasticsearchFactory();
+                factory.getDatabase().init(elasticsearchHost, elasticsearchPort1, elasticsearchPort2);
+            } catch (DatabaseException e) {
+                System.out.println(e.getMessage());
+                return;
+            }
             new Server().run(portNumber);
         }
     }
