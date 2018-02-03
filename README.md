@@ -34,6 +34,7 @@ What I would do if I had more time:
    * TEST, TEST, TEST - Finish the Junit integration & unit tests that I've started working on
    * Finish integration of Elasticsearch & Contact data access object
    * Finish the User Interface (/client/Main) 
+   * Add more Javadoc comments; they're really solid on some classes but really lacking on others.
    * Deliverables:
       * Test storage/retrieval of data in Elasticsearch - this is what's causing problems in the system.
       * Implement the GET /contact?.... endpoint
